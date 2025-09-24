@@ -64,7 +64,7 @@ Legend: Implemented 🟢 | Partial 🟠 | Not Implemented 🔴 | N/A ⚪ (guidan
 - Validation: proper HTTP codes + Problem Details errors — Implemented 🟢
 - Observability: structured logs; health checks; correlation id (x-correlation-id) — Implemented 🟢
 - Testing (Bonus) — Partial 🟠
-  - Backends: unit tests for domain; at least one integration test — Partial 🟠 (present; can expand)
+  - Backends: unit tests for domain; at least one integration test — Implemented 🟢 (unit + integration tests passing)
   - Frontend: 1-2 component tests or Playwright smoke — Not Implemented 🔴 (planned)
 - Security: no auth; design with it in mind — Implemented 🟢 (no secrets logged; clean separation)
 - Docs: clear README with run commands & decisions — Implemented 🟢 (can be expanded further)
