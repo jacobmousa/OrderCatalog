@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Orders.Api": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SWAGGER__ENABLED": "true",
+        "CATALOG_BASE_URL": "http://localhost:5000"
+      }
+    }
+  }
+}

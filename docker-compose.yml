@@ -1,0 +1,57 @@
+# Top-level Docker Compose file for local development.
+# Notes:
+#  - We use a single SQL Server instance hosting multiple databases (CatalogDb, OrdersDb).
+#  - Healthcheck is intentionally generous (start_period + retries) to allow initial SQL setup on slower machines.
+#  - Environment variable expansion uses ${SA_PASSWORD:-Your_password123} so you can override with a .env file.
+#  - API containers depend on a healthy sqlserver so migrations run after readiness.
+#  - Ports: host 5000 -> catalog-api (Kestrel on 8080), host 5001 -> orders-api, host 14333 -> SQL Server (1433 in container).
+#
+# To override the SA password without editing this file, create a .env file with:
+#   SA_PASSWORD=Stronger_Passw0rd!
+# Then run: docker compose up -d
+#
+# Compose v2 no longer needs a version field – removed to silence the old warning.
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y                 # Mandatory EULA acceptance for the SQL Server image
+      - SA_PASSWORD=${SA_PASSWORD:-Your_password123} # Strong password (complexity required). Override via .env
+      - MSSQL_PID=Developer           # Edition: Developer = full features, not for production
+    ports:
+      - "14333:1433"                 # Expose SQL Server locally (avoid colliding with default 1433)
+    volumes:
+      - sql_data:/var/opt/mssql       # Persistent storage for system & user databases
+    # Healthcheck removed for faster startup in dev; APIs will rely on EF retry logic.
+
+  catalog-api:
+    build:
+      context: .
+      dockerfile: src/Catalog.Api/Dockerfile
+    container_name: catalog-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development # Enables Swagger UI & detailed errors
+      - ConnectionStrings__CatalogDb=Server=sqlserver;Database=CatalogDb;User Id=sa;Password=${SA_PASSWORD:-Your_password123};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=true
+    depends_on:
+      - sqlserver
+    ports:
+      - "5000:8080" # Access the Catalog API at http://localhost:5000
+
+  orders-api:
+    build:
+      context: .
+      dockerfile: src/Orders.Api/Dockerfile
+    container_name: orders-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development # Enables Swagger UI & detailed errors
+      - ConnectionStrings__OrdersDb=Server=sqlserver;Database=OrdersDb;User Id=sa;Password=${SA_PASSWORD:-Your_password123};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=true
+      - CATALOG_BASE_URL=http://catalog-api:8080 # Internal service-to-service base URL
+    depends_on:
+      - sqlserver
+      - catalog-api
+    ports:
+      - "5001:8080" # Access the Orders API at http://localhost:5001
+
+volumes:
+  sql_data: # Named volume for persisting SQL Server data between container restarts

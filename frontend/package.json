@@ -1,0 +1,15 @@
+{
+  "name": "ecommerce-frontend-workspace",
+  "private": true,
+  "workspaces": [
+    "web-shell",
+    "catalog-remote",
+    "orders-remote"
+  ],
+  "scripts": {
+    "dev:web-shell": "npm run dev --workspace=web-shell",
+    "dev:catalog": "npm run dev --workspace=catalog-remote",
+    "dev:orders": "npm run dev --workspace=orders-remote",
+    "dev": "echo Specify one of: dev:web-shell, dev:catalog, dev:orders"
+  }
+}

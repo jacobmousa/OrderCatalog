@@ -1,0 +1,15 @@
+bin
+obj
+**/*.user
+**/*.swp
+**/*.suo
+**/*.csproj.user
+**/node_modules
+**/coverage
+*.Temp
+*.tmp
+*.log
+Dockerfile*
+**/Properties/launchSettings.json
+**/*.pdb
+**/*.mdb
