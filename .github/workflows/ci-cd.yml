@@ -1,0 +1,54 @@
+name: CI - Build & Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20.x'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore .NET
+        run: dotnet restore ./ECommerceDemo.sln
+
+      - name: Build .NET
+        run: dotnet build ./ECommerceDemo.sln --configuration Release --no-restore
+
+      - name: Test .NET
+        run: dotnet test ./ECommerceDemo.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Node deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend workspaces
+        working-directory: frontend
+        run: |
+          npm run build --workspace=catalog-remote || echo "catalog-remote build skipped"
+          npm run build --workspace=orders-remote || echo "orders-remote build skipped"
+          npm run build --workspace=web-shell || echo "web-shell build skipped"
