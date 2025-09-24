@@ -1,0 +1,36 @@
+services:
+  catalog-api:
+    image: ${ECR_REGISTRY}/catalog-api:${IMAGE_TAG}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__CatalogDb=Server=sqlserver;Database=CatalogDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=true
+    depends_on:
+      - sqlserver
+    ports:
+      - "8080:8080"
+
+  orders-api:
+    image: ${ECR_REGISTRY}/orders-api:${IMAGE_TAG}
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__OrdersDb=Server=sqlserver;Database=OrdersDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=true
+      - CATALOG_BASE_URL=http://catalog-api:8080
+    depends_on:
+      - sqlserver
+      - catalog-api
+    ports:
+      - "8081:8080"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Developer
+    volumes:
+      - sql_data:/var/opt/mssql
+    ports:
+      - "1433:1433"
+
+volumes:
+  sql_data:
