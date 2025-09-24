@@ -1,4 +1,4 @@
-name: CI - Build & Test
+name: CI - Split Build & Tests
 
 on:
   push:
@@ -15,7 +15,7 @@ env:
   NODE_VERSION: '20.x'
 
 jobs:
-  build-and-test:
+  build-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,11 +29,59 @@ jobs:
       - name: Restore .NET
         run: dotnet restore ./ECommerceDemo.sln
 
-      - name: Build .NET
+      - name: Build .NET (Release)
         run: dotnet build ./ECommerceDemo.sln --configuration Release --no-restore
 
-      - name: Test .NET
-        run: dotnet test ./ECommerceDemo.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+      - name: Upload build outputs (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-build
+          path: |
+            **/bin/Release/**
+          if-no-files-found: ignore
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: build-backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore .NET
+        run: dotnet restore ./ECommerceDemo.sln
+
+      - name: Run unit tests
+        run: dotnet test ./ECommerceDemo.sln --configuration Release --filter TestCategory=Unit --logger "trx;LogFileName=unit-results.trx" || dotnet test ./ECommerceDemo.sln --configuration Release --logger "trx;LogFileName=results.trx"
+
+  api-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore .NET
+        run: dotnet restore ./ECommerceDemo.sln
+
+      - name: Run API/integration tests
+        run: dotnet test ./ECommerceDemo.sln --configuration Release --filter TestCategory=Integration --logger "trx;LogFileName=integration-results.trx" || dotnet test ./ECommerceDemo.sln --configuration Release --logger "trx;LogFileName=results.trx"
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    needs: api-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
