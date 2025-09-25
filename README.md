@@ -2,6 +2,10 @@
 
 Monorepo with .NET 8 Web APIs (Catalog, Orders) and React micro-frontends (Vite + Module Federation).
 
+## Demo
+
+![OrderCatalog demo](./OrderCatalog.gif)
+
 ## Contents
 - `src/Catalog.Api` – Products API (search, filter, CRUD subset)
 - `src/Orders.Api` – Orders API (drafts, items, confirm/cancel)
