@@ -44,11 +44,11 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpPost("{id:guid}/items")]
+    [HttpPost("{id:long}/items")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddItem(Guid id, [FromBody] AddOrderItemRequest request)
+    public async Task<IActionResult> AddItem(long id, [FromBody] AddOrderItemRequest request)
     {
         try
         {
@@ -66,11 +66,11 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpPost("{id:guid}/confirm")]
+    [HttpPost("{id:long}/confirm")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Confirm(Guid id)
+    public async Task<IActionResult> Confirm(long id)
     {
         try
         {
@@ -85,11 +85,11 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpPost("{id:guid}/cancel")]
+    [HttpPost("{id:long}/cancel")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Cancel(Guid id)
+    public async Task<IActionResult> Cancel(long id)
     {
         try
         {
@@ -104,10 +104,10 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{id:long}")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetById(long id)
     {
         var order = await _db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id);
         if (order is null) return NotFound();

@@ -117,7 +117,16 @@ else
                     catch (Exception ex)
                     { logger.LogError(ex, "OrdersDb migration failed after {Max} attempts - continuing without ensuring schema", maxAttempts); }
                 }
-                // Cleanup: dev-only DDL and ad-hoc verification removed. We rely on migrations.
+                // Dev-friendly safety net: if Orders table is still missing (e.g., migration assembly mismatch), call EnsureCreated.
+                try
+                {
+                    _ = await db.Orders.AsNoTracking().AnyAsync();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Orders table check failed; attempting EnsureCreated() as a development fallback.");
+                    await db.Database.EnsureCreatedAsync();
+                }
             }
             else
             {

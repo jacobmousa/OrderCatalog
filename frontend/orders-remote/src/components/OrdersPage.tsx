@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 interface OrderSummary {
-  id: string;
+  id: string | number;
   customerId: string;
   status: string;
   totalAmount: number;
@@ -23,7 +23,7 @@ export const OrdersPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [creating, setCreating] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | number | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<OrderSummary | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [addSku, setAddSku] = useState("");
@@ -82,7 +82,7 @@ export const OrdersPage: React.FC = () => {
     }
   }
 
-  async function loadDetail(id: string) {
+  async function loadDetail(id: string | number) {
     if (detailLoading) return;
     setDetailError(null);
     setDetailLoading(true);
@@ -98,7 +98,7 @@ export const OrdersPage: React.FC = () => {
     }
   }
 
-  function toggleSelect(id: string) {
+  function toggleSelect(id: string | number) {
     if (selectedId === id) {
       setSelectedId(null); setSelectedOrder(null); setDetailError(null);
     } else {

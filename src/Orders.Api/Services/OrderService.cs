@@ -10,9 +10,9 @@ namespace Orders.Api.Services;
 public interface IOrderService
 {
     Task<Order> CreateDraftAsync(string? customerId);
-    Task<Order> AddItemAsync(Guid orderId, AddOrderItemRequest request);
-    Task<Order> ConfirmAsync(Guid id);
-    Task<Order> CancelAsync(Guid id);
+    Task<Order> AddItemAsync(long orderId, AddOrderItemRequest request);
+    Task<Order> ConfirmAsync(long id);
+    Task<Order> CancelAsync(long id);
 }
 
 public class OrderService : IOrderService
@@ -33,7 +33,7 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public async Task<Order> AddItemAsync(Guid orderId, AddOrderItemRequest request)
+    public async Task<Order> AddItemAsync(long orderId, AddOrderItemRequest request)
     {
         var order = await _db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == orderId) ?? throw new OrderNotFoundException();
         order.EnsureDraft();
@@ -76,7 +76,7 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public async Task<Order> ConfirmAsync(Guid id)
+    public async Task<Order> ConfirmAsync(long id)
     {
         var order = await _db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id) ?? throw new OrderNotFoundException();
         order.Confirm();
@@ -85,7 +85,7 @@ public class OrderService : IOrderService
         return order;
     }
 
-    public async Task<Order> CancelAsync(Guid id)
+    public async Task<Order> CancelAsync(long id)
     {
         var order = await _db.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.Id == id) ?? throw new OrderNotFoundException();
         order.Cancel();

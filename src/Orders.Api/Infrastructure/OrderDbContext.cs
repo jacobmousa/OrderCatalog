@@ -14,6 +14,7 @@ public class OrderDbContext : DbContext
         {
             cfg.ToTable("Orders");
             cfg.HasKey(o => o.Id);
+            cfg.Property(o => o.Id).ValueGeneratedOnAdd();
             cfg.Property(o => o.Status).HasConversion<string>();
             // Monetary precision (eliminate truncation warnings)
             cfg.Property(o => o.TotalAmount).HasPrecision(18,2);

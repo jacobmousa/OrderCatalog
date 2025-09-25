@@ -15,7 +15,7 @@ public class OrderDbContextModelSnapshot : ModelSnapshot
         modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
         modelBuilder.Entity<Order>(b =>
         {
-            b.Property<Guid>("Id").ValueGeneratedOnAdd();
+            b.Property<long>("Id").ValueGeneratedOnAdd();
             b.Property<string>("CustomerId").IsRequired();
             b.Property<string>("Status").IsRequired();
             b.Property<decimal>("TotalAmount").HasColumnType("decimal(18,2)");
@@ -26,14 +26,14 @@ public class OrderDbContextModelSnapshot : ModelSnapshot
             b.OwnsMany(o => o.Items, items =>
             {
                 items.Property<Guid>("Id").ValueGeneratedOnAdd();
-                items.Property<Guid>("OrderId");
+                items.Property<long>("OrderId");
                 items.Property<Guid>("ProductId");
                 items.Property<string>("Sku").IsRequired();
                 items.Property<int>("Qty");
                 items.Property<decimal>("UnitPrice").HasColumnType("decimal(18,2)");
                 items.HasKey("Id");
                 items.WithOwner().HasForeignKey("OrderId");
-                items.ToTable("OrderItem");
+                items.ToTable("OrderItems");
                 items.HasIndex("OrderId");
             });
         });

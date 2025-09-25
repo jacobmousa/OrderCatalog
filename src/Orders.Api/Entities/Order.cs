@@ -2,7 +2,7 @@ namespace Orders.Api.Entities;
 
 public class Order
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public long Id { get; set; }
     public string CustomerId { get; set; } = string.Empty!;
     public OrderStatus Status { get; set; } = OrderStatus.Draft;
     public List<OrderItem> Items { get; set; } = new();
@@ -21,7 +21,7 @@ public class Order
 public class OrderItem
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid OrderId { get; set; }
+    public long OrderId { get; set; }
     public Guid ProductId { get; set; }
     public string Sku { get; set; } = string.Empty!;
     public int Qty { get; set; }

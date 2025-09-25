@@ -45,7 +45,7 @@ public class OrdersIntegrationTests : IClassFixture<OrdersApiFactory>
     [Fact]
     public async Task Cancel_Nonexistent_Returns_NotFound()
     {
-        var cancel = await _client.PostAsync($"/api/orders/{Guid.NewGuid()}/cancel", null);
+        var cancel = await _client.PostAsync($"/api/orders/{long.MaxValue - 12345}/cancel", null);
         cancel.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }
